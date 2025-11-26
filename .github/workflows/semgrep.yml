@@ -1,0 +1,25 @@
+name: semgrep-scan
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install semgrep
+        run: pip install semgrep
+      - name: Run semgrep (auto rules)
+        run: semgrep --config=auto --json > semgrep-result.json || true
+      - name: Upload semgrep results
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-report
+          path: semgrep-result.json
